@@ -1,0 +1,35 @@
+RewriteEngine On
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Security headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "DENY"
+  Header set X-XSS-Protection "1; mode=block"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Block access to sensitive files
+<FilesMatch "\.(env|json|md|lock|yml|yaml)$">
+  Require all denied
+</FilesMatch>
+
+# Block access to storage directory
+RewriteRule ^storage/private/ - [F,L]
+
+# Block access to hidden files
+RewriteRule "(^|/)\." - [F,L]
+
+# Passenger configuration
+PassengerEnabled On
+PassengerAppRoot "/home/olusiaou/olusbisimmigrationservices"
+PassengerNodejs "/home/olusiaou/nodevenv/home/olusiaou/olusbisimmigrationservices/22/bin/node"
+PassengerStartupFile passenger.js
+PassengerFriendlyErrorPages off
+
+# Set environment variables via Passenger
+PassengerSetEnv NODE_ENV production
+PassengerSetEnv NEXT_DISABLE_TURBOPACK 1
