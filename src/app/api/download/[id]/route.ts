@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { readFile } from "fs/promises";
-import { join } from "path";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -34,16 +32,11 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const filePath = join(process.cwd(), document.filePath);
-    const fileBuffer = await readFile(filePath);
+    if (!document.fileUrl) {
+      return NextResponse.json({ error: "File not available" }, { status: 404 });
+    }
 
-    return new NextResponse(fileBuffer, {
-      headers: {
-        "Content-Type": document.mimeType,
-        "Content-Disposition": `attachment; filename="${document.originalName}"`,
-        "Content-Length": String(fileBuffer.length),
-      },
-    });
+    return NextResponse.redirect(document.fileUrl);
   } catch (error) {
     console.error("Download API error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

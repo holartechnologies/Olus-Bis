@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Upload, FileText, Download, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { useUploadThing } from "@/lib/uploadthing-client";
 
 interface Document {
   id: string;
@@ -19,50 +19,60 @@ interface Document {
 }
 
 export default function ClientDocumentsPage() {
-  const [uploading, setUploading] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useState(() => {
+  useEffect(() => {
     fetch("/api/documents")
       .then((res) => res.json())
       .then((data) => setDocuments(data.documents || []))
       .catch(() => {})
       .finally(() => setLoading(false));
+  }, []);
+
+  const { startUpload, isUploading } = useUploadThing("documentUploader", {
+    onClientUploadComplete: async (res) => {
+      if (!res?.[0]) return;
+      const file = res[0];
+      try {
+        const apiRes = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileUrl: file.ufsUrl,
+            fileKey: file.key,
+            fileName: file.name,
+            originalName: file.name,
+            fileSize: file.size,
+            mimeType: file.type,
+            category: "general",
+          }),
+        });
+        if (apiRes.ok) {
+          const data = await apiRes.json();
+          setDocuments((prev) => [data.document, ...prev]);
+          toast.success("Document uploaded successfully!");
+        } else {
+          const err = await apiRes.json();
+          toast.error(err.error || "Failed to save document");
+        }
+      } catch {
+        toast.error("Failed to save document metadata");
+      }
+    },
+    onUploadError: (error) => {
+      toast.error(error.message || "Upload failed");
+    },
   });
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (file.size > 20 * 1024 * 1024) {
       toast.error("File size must be less than 20MB");
       return;
     }
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (res.ok) {
-        toast.success("Document uploaded successfully!");
-        const data = await res.json();
-        setDocuments((prev) => [data.document, ...prev]);
-      } else {
-        const err = await res.json();
-        toast.error(err.error || "Upload failed");
-      }
-    } catch {
-      toast.error("Upload failed. Please try again.");
-    } finally {
-      setUploading(false);
-    }
+    await startUpload([file]);
   };
 
   const getStatusIcon = (status: string) => {
@@ -90,28 +100,28 @@ export default function ClientDocumentsPage() {
           <p className="text-sm text-gray-500">Upload and manage your immigration documents</p>
         </div>
         <div>
-          <input
-            type="file"
-            id="file-upload"
-            className="hidden"
-            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-            onChange={handleUpload}
-            disabled={uploading}
-          />
-          <Button
-            asChild
-            disabled={uploading}
-            className="bg-[#0B3AA8] hover:bg-[#082A78]"
-          >
-            <label htmlFor="file-upload" className="cursor-pointer">
-              {uploading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Upload className="mr-2 h-4 w-4" />
-              )}
-              {uploading ? "Uploading..." : "Upload Document"}
-            </label>
-          </Button>
+            <input
+              type="file"
+              id="file-upload"
+              className="hidden"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              onChange={handleUpload}
+              disabled={isUploading}
+            />
+            <Button
+              asChild
+              disabled={isUploading}
+              className="bg-[#0B3AA8] hover:bg-[#082A78]"
+            >
+              <label htmlFor="file-upload" className="cursor-pointer">
+                {isUploading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" />
+                )}
+                {isUploading ? "Uploading..." : "Upload Document"}
+              </label>
+            </Button>
         </div>
       </div>
 

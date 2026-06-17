@@ -98,10 +98,4 @@ export const ALLOWED_FILE_EXTENSIONS = [".pdf", ".doc", ".docx", ".jpg", ".jpeg"
 
 export const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 
-export const UPLOAD_DIRS = {
-  PASSPORTS: "storage/private/passports",
-  CERTIFICATES: "storage/private/certificates",
-  VISA_DOCUMENTS: "storage/private/visa-documents",
-  EMPLOYMENT_RECORDS: "storage/private/employment-records",
-  CONSULTATION_FILES: "storage/private/consultation-files",
-} as const;
+

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { uploadFile, getFileCategory } from "@/lib/upload";
 
 export async function POST(request: Request) {
   try {
@@ -20,30 +19,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Client profile not found" }, { status: 400 });
     }
 
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
-    const category = (formData.get("category") as string) || "general";
+    const body = await request.json();
+    const { fileUrl, fileKey, fileName, originalName, fileSize, mimeType, category } = body;
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    }
-
-    const subDir = category || getFileCategory(file.name);
-    const result = await uploadFile(file, subDir);
-
-    if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+    if (!fileUrl || !fileKey || !originalName) {
+      return NextResponse.json({ error: "Missing required file metadata" }, { status: 400 });
     }
 
     const document = await prisma.document.create({
       data: {
         clientId: user.client.id,
-        fileName: result.fileName!,
-        originalName: file.name,
-        filePath: result.filePath!,
-        fileSize: file.size,
-        mimeType: file.type,
-        category: subDir,
+        fileName: fileName || originalName,
+        originalName,
+        filePath: fileUrl,
+        fileSize,
+        mimeType,
+        category: category || "general",
+        fileUrl,
+        fileKey,
         uploadedById: userId,
       },
     });
@@ -52,7 +45,7 @@ export async function POST(request: Request) {
       data: {
         userId,
         title: "Document Uploaded",
-        message: `Your document "${file.name}" has been uploaded successfully and is pending verification.`,
+        message: `Your document "${originalName}" has been uploaded successfully and is pending verification.`,
         type: "DOCUMENT_UPLOAD",
       },
     });

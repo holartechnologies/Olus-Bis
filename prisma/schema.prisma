@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 enum Role {
@@ -237,6 +238,8 @@ model Document {
   verifiedById       String?
   verifiedAt         DateTime?
   uploadedById       String?
+  fileKey            String?
+  fileUrl            String?
   createdAt          DateTime                    @default(now())
   updatedAt          DateTime                    @updatedAt
 
@@ -393,7 +396,7 @@ model Message {
   sender    User      @relation("MessageSender", fields: [senderId], references: [id])
   recipient User      @relation("MessageRecipient", fields: [recipientId], references: [id])
   replies   Message[] @relation("MessageReplies")
-  parent    Message?  @relation("MessageReplies", fields: [parentId], references: [id])
+  parent    Message?  @relation("MessageReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("messages")
 }
