@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Upload, FileText, Download, Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
-import { useUploadThing } from "@/lib/uploadthing-client";
+import { createClient } from "@/lib/supabase-browser";
 
 interface Document {
   id: string;
@@ -21,6 +21,7 @@ interface Document {
 export default function ClientDocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetch("/api/documents")
@@ -30,40 +31,56 @@ export default function ClientDocumentsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const { startUpload, isUploading } = useUploadThing("documentUploader", {
-    onClientUploadComplete: async (res) => {
-      if (!res?.[0]) return;
-      const file = res[0];
-      try {
-        const apiRes = await fetch("/api/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fileUrl: file.ufsUrl,
-            fileKey: file.key,
-            fileName: file.name,
-            originalName: file.name,
-            fileSize: file.size,
-            mimeType: file.type,
-            category: "general",
-          }),
-        });
-        if (apiRes.ok) {
-          const data = await apiRes.json();
-          setDocuments((prev) => [data.document, ...prev]);
-          toast.success("Document uploaded successfully!");
-        } else {
-          const err = await apiRes.json();
-          toast.error(err.error || "Failed to save document");
-        }
-      } catch {
-        toast.error("Failed to save document metadata");
+  const uploadToSupabase = useCallback(async (file: File) => {
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const bucket = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "documents";
+      const fileKey = `${crypto.randomUUID()}-${file.name}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(fileKey, file);
+
+      if (uploadError) {
+        toast.error(uploadError.message || "Upload failed");
+        return;
       }
-    },
-    onUploadError: (error) => {
-      toast.error(error.message || "Upload failed");
-    },
-  });
+
+      const { data: urlData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(fileKey);
+
+      const fileUrl = urlData.publicUrl;
+
+      const apiRes = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileUrl,
+          fileKey,
+          fileName: file.name,
+          originalName: file.name,
+          fileSize: file.size,
+          mimeType: file.type,
+          category: "general",
+        }),
+      });
+
+      if (apiRes.ok) {
+        const data = await apiRes.json();
+        setDocuments((prev) => [data.document, ...prev]);
+        toast.success("Document uploaded successfully!");
+      } else {
+        const err = await apiRes.json();
+        toast.error(err.error || "Failed to save document");
+      }
+    } catch {
+      toast.error("Failed to upload document");
+    } finally {
+      setUploading(false);
+    }
+  }, []);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -72,7 +89,7 @@ export default function ClientDocumentsPage() {
       toast.error("File size must be less than 20MB");
       return;
     }
-    await startUpload([file]);
+    await uploadToSupabase(file);
   };
 
   const getStatusIcon = (status: string) => {
@@ -106,20 +123,20 @@ export default function ClientDocumentsPage() {
               className="hidden"
               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
               onChange={handleUpload}
-              disabled={isUploading}
+              disabled={uploading}
             />
             <Button
               asChild
-              disabled={isUploading}
+              disabled={uploading}
               className="bg-[#0B3AA8] hover:bg-[#082A78]"
             >
               <label htmlFor="file-upload" className="cursor-pointer">
-                {isUploading ? (
+                {uploading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <Upload className="mr-2 h-4 w-4" />
                 )}
-                {isUploading ? "Uploading..." : "Upload Document"}
+                {uploading ? "Uploading..." : "Upload Document"}
               </label>
             </Button>
         </div>
