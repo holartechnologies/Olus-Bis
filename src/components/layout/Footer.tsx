@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 
 export function Footer() {
   return (
-    <footer className="bg-[#082A78] text-white">
-      <div className="container mx-auto py-16" style={{ paddingLeft: "8%", paddingRight: "8%" }}>
+    <footer className="bg-[#082A78] text-white" style={{ paddingLeft: "8%", paddingRight: "8%" }}>
+      <div className="py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
             <div className="mb-4">
@@ -94,7 +94,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-blue-800">
-        <div className="container mx-auto py-6 flex flex-col md:flex-row items-center justify-between gap-4" style={{ paddingLeft: "8%", paddingRight: "8%" }}>
+        <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-blue-300">
             &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
           </p>
