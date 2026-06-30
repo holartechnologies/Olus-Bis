@@ -1,206 +1,121 @@
-# Deployment Guide for Namecheap Shared Hosting
+# Deployment Guide
+
+This guide covers deploying **OLUS-BIS Immigration Services** to **Vercel** with **Supabase** (PostgreSQL database + file storage).
 
 ## Prerequisites
-- Namecheap Shared Hosting account (Stellar or higher recommended)
-- Domain name configured in Namecheap
-- Node.js 18+ support (verify with Namecheap support or use CGI/Node.js selector in cPanel)
 
-## Step 1: Database Setup
+- [GitHub](https://github.com) account
+- [Vercel](https://vercel.com) account
+- [Supabase](https://supabase.com) project (database + storage already configured)
 
-1. Log into your Namecheap cPanel
-2. Find **MySQL Databases** (or **MariaDB**)
-3. Create a new database:
-   - Database Name: `olusbis_immigration`
-   - Username: Create a database user
-   - Password: Strong password
-4. Note the database connection details:
-   - Host: Usually `localhost` (check cPanel)
-   - Port: `3306`
+---
 
-## Step 2: Prepare Your Project
+## Step 1: Supabase Setup (Already Done)
+
+- PostgreSQL database provisioned
+- `documents` storage bucket created (public, with upload/read policies)
+- Database schema pushed and migrated
+
+---
+
+## Step 2: Deploy to Vercel
+
+### 2.1 Push code to GitHub
 
 ```bash
-# 1. Install dependencies
-npm install
-
-# 2. Generate Prisma client
-npx prisma generate
-
-# 3. Push schema to database
-npx prisma db push
-
-# 4. Seed the database (creates admin user + sample data)
-npx prisma db seed
-
-# 5. Build the project
-npm run build
+git push origin main
 ```
 
-## Step 3: Upload to Namecheap
+### 2.2 Import on Vercel
 
-### Option A: Direct Upload (via cPanel File Manager)
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import the `holartechnologies/Olus-Bis` repository
+3. Framework is auto-detected as **Next.js**
+4. Expand **Environment Variables**
 
-1. In cPanel, open **File Manager**
-2. Navigate to `public_html` (or a subfolder if using a subdomain)
-3. Upload the entire project (or use Git)
+### 2.3 Add Environment Variables
 
-### Option B: Git Deployment
+Add every variable from your `.env` file into Vercel:
 
-1. In cPanel, find **Git Version Control**
-2. Create or clone a repository
-3. Point it to your repository
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | Your Supabase PostgreSQL connection string (pooler) |
+| `AUTH_SECRET` | Random secret (generate via `openssl rand -base64 32`) |
+| `AUTH_URL` | `https://your-domain.vercel.app` |
+| `OPENAI_API_KEY` | Your OpenAI API key |
+| `SMTP_HOST` | `mail.privateemail.com` |
+| `SMTP_PORT` | `465` |
+| `SMTP_SECURE` | `true` |
+| `SMTP_USER` | `noreply@yourdomain.com` |
+| `SMTP_PASS` | Your SMTP password |
+| `SMTP_FROM` | `noreply@yourdomain.com` |
+| `RESEND_API_KEY` | (optional) |
+| `NEXT_PUBLIC_SITE_URL` | `https://your-domain.vercel.app` |
+| `NEXT_PUBLIC_SITE_NAME` | `OLUS-BIS Immigration Services` |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | Your WhatsApp number |
+| `NEXT_PUBLIC_PHONE_NUMBER` | Your phone number |
+| `NEXT_PUBLIC_EMAIL` | `info@yourdomain.com` |
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key |
+| `NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET` | `documents` |
 
-## Step 4: Configure Environment Variables
+### 2.4 Deploy
 
-Create `.env` file in the project root on the server:
+Click **Deploy**. Vercel will build and deploy the project automatically.
 
-```env
-DATABASE_URL="mysql://username:password@localhost:3306/olusbis_immigration"
-AUTH_SECRET="your-random-secret-here"
-AUTH_URL="https://yourdomain.com"
-OPENAI_API_KEY="your-openai-api-key"
-SMTP_HOST="mail.privateemail.com"
-SMTP_PORT=465
-SMTP_SECURE=true
-SMTP_USER="noreply@yourdomain.com"
-SMTP_PASS="your-password"
-SMTP_FROM="noreply@yourdomain.com"
-NEXT_PUBLIC_SITE_URL="https://yourdomain.com"
-NEXT_PUBLIC_SITE_NAME="OLUS-BIS Immigration Services"
-NEXT_PUBLIC_WHATSAPP_NUMBER="+1234567890"
-NEXT_PUBLIC_PHONE_NUMBER="+1234567890"
-NEXT_PUBLIC_EMAIL="info@yourdomain.com"
-```
+---
 
-## Step 5: Start the Application
+## Step 3: Post-Deployment
 
-### Using Node.js App (if available in cPanel):
+1. Visit your Vercel URL to verify the site works
+2. Login at `/auth/login`:
+   - **Email:** `admin@olus-bis.com`
+   - **Password:** `Admin@123456`
+3. Change the admin password immediately
 
-1. Go to **Setup Node.js App** in cPanel
-2. Create a new application:
-   - Node.js version: 18.x or 20.x
-   - Application mode: Production
-   - Application root: `/public_html` (or subfolder)
-   - Application URL: your domain
-   - Application startup file: `node_modules/.bin/next`
-   - Pass environment variables (from `.env`)
-3. Start the application
+### Custom Domain (Optional)
 
-### Using Passenger (mod_passenger):
+1. In your Vercel project dashboard, go to **Settings → Domains**
+2. Add your custom domain (e.g., `olus-bis.com`)
+3. Update your domain's DNS records as instructed by Vercel
 
-Namecheap supports Passenger for Node.js apps:
-1. Ensure a `package.json` exists
-2. The app will auto-start via Passenger
+---
 
-### Using Custom Startup Script:
+## Environment Variables Reference
 
-Create a `server.js` in the root:
-
-```javascript
-const { spawn } = require('child_process');
-const next = spawn('npx', ['next', 'start'], {
-  env: { ...process.env, PORT: process.env.PORT || 3000 },
-  stdio: 'inherit'
-});
-next.on('close', (code) => process.exit(code));
-```
-
-## Step 6: Configure .htaccess (Apache)
-
-Create/update `.htaccess` in `public_html`:
-
-```apache
-# Force HTTPS
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
-
-# Proxy to Node.js app (if not using Passenger)
-RewriteRule ^(.*)$ http://localhost:3000/$1 [P,L]
-
-# Security headers
-Header set X-Content-Type-Options "nosniff"
-Header set X-Frame-Options "DENY"
-Header set X-XSS-Protection "1; mode=block"
-Header set Referrer-Policy "strict-origin-when-cross-origin"
-
-# Block access to sensitive files
-<FilesMatch "\.(env|json|md|lock)$">
-  Require all denied
-</FilesMatch>
-
-# Block access to storage directory
-RewriteRule ^storage/ - [F,L]
-```
-
-## Step 7: Post-Deployment
-
-1. Visit `https://yourdomain.com` to verify the site works
-2. Visit `https://yourdomain.com/admin` to access the admin dashboard
-3. Log in with admin credentials:
-   - Email: `admin@olus-bis.com`
-   - Password: `Admin@123456`
-4. Change the admin password immediately
-
-## Step 8: SSL Certificate
-
-1. In cPanel, find **SSL/TLS**
-2. Install **AutoSSL** or **Let's Encrypt**
-3. Ensure HTTPS is working on your domain
-
-## Folder Structure on Server
+### Database (Supabase PostgreSQL)
 
 ```
-public_html/          # or a subfolder
-├── .next/            # Built application
-├── storage/
-│   └── private/      # Uploaded files (secure)
-│       ├── passports/
-│       ├── certificates/
-│       ├── visa-documents/
-│       ├── employment-records/
-│       └── consultation-files/
-├── src/
-├── prisma/
-├── public/
-├── node_modules/
-├── .env              # Environment variables (KEEP SECURE)
-├── package.json
-├── next.config.ts
-└── server.js         # Optional startup script
+DATABASE_URL="postgresql://postgres.[project-ref]:[password]@[region].pooler.supabase.com:5432/postgres?sslmode=require"
 ```
 
-## Important Notes
+### Supabase (Storage + Auth)
 
-1. **Storage**: Files are stored locally under `/storage/private/` - no external storage services needed
-2. **Backups**: Regularly backup the `/storage/private/` folder and database
-3. **Updates**: Run `npm run build` after any code changes
-4. **Monitoring**: Check cPanel error logs if something goes wrong
-5. **Scaling**: If traffic grows, consider upgrading your Namecheap hosting plan
+```
+NEXT_PUBLIC_SUPABASE_URL="https://[project-ref].supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="[anon-key]"
+SUPABASE_SERVICE_ROLE_KEY="[service-role-key]"
+NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET="documents"
+```
+
+---
 
 ## Troubleshooting
 
-**Site shows 500 error:**
-- Check `.env` file is properly configured
-- Check database connection
-- Check Node.js version compatibility
-- View error logs in cPanel
+**Build fails:**
+- Ensure all env vars are set in Vercel dashboard
+- Run `npm run build` locally to check for errors
 
-**Uploads not working:**
-- Ensure `/storage/private/` directory is writable
-- Check file size limits in php.ini (if applicable)
+**Database connection error:**
+- Verify `DATABASE_URL` uses the **pooler** connection string (not direct)
+- Ensure `sslmode=require` is appended
+
+**File uploads fail:**
+- Verify `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are correct
+- Check that the `documents` bucket exists and has upload policies
+- Check browser console for CORS errors
 
 **Emails not sending:**
-- Verify SMTP settings in `.env`
-- Check if Namecheap email is properly configured
-- Try using Resend as alternative
-
-**Build failing:**
-- Ensure all dependencies are installed: `npm ci`
-- Clear Next.js cache: `rm -rf .next`
-- Rebuild: `npm run build`
-
-## Support
-
-For hosting-related issues: Namecheap Support
-For application issues: Your development team
+- Verify SMTP settings in Vercel env vars
+- Try using Resend as alternative (set `RESEND_API_KEY`)
