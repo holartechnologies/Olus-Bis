@@ -8,7 +8,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <Header />
-      <main className="flex-1 px-[8%]">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
       <WhatsAppButton />
       <StickyConsultButton />
