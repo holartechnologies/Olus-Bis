@@ -124,8 +124,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <section className="py-20 bg-gray-50" style={{ paddingLeft: "8%", paddingRight: "8%" }}>
+        <div className="container mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl md:text-4xl font-bold text-[#0B3AA8] mb-4">
               Our Immigration Services
