@@ -42,7 +42,7 @@ export default function AboutPage() {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-[8%] text-center">
           <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">About Us</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Story</h1>
           <p className="text-lg text-blue-200 max-w-2xl mx-auto">
@@ -52,7 +52,7 @@ export default function AboutPage() {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-[8%]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl font-bold text-[#0B3AA8] mb-4">Barrister Oluseyi Bisiriyu</h2>
@@ -78,7 +78,7 @@ export default function AboutPage() {
       </section>
 
       <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-[8%]">
           <div className="grid md:grid-cols-2 gap-12 mb-16">
             <Card className="border-0 shadow-md">
               <CardContent className="p-8">
@@ -126,7 +126,7 @@ export default function AboutPage() {
       </section>
 
       <section className="py-20 bg-gradient-brand text-white">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-[8%] text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose OLUS-BIS?</h2>
           <p className="text-lg text-blue-200 mb-8 max-w-2xl mx-auto">
             We combine legal expertise with personalized service to deliver the best outcomes for our clients.

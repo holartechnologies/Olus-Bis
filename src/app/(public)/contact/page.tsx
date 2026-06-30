@@ -53,7 +53,7 @@ export default function ContactPage() {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-[8%] text-center">
           <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">Contact Us</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h1>
           <p className="text-lg text-blue-200 max-w-2xl mx-auto">
@@ -63,7 +63,7 @@ export default function ContactPage() {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-[8%]">
           <div className="grid lg:grid-cols-2 gap-12">
             <div>
               <h2 className="text-2xl font-bold text-[#0B3AA8] mb-6">Send Us a Message</h2>

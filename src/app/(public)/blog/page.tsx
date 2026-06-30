@@ -18,7 +18,7 @@ export default async function BlogPage() {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-[8%] text-center">
           <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">
             Resource Center
           </Badge>
@@ -30,7 +30,7 @@ export default async function BlogPage() {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-[8%]">
           {posts.length === 0 ? (
             <div className="text-center py-20">
               <FileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
