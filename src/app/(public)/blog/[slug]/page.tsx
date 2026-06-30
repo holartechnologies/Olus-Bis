@@ -24,7 +24,7 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-[8%]">
+        <div className="container mx-auto px-4">
           <Link href="/blog" className="inline-flex items-center text-sm text-blue-200 hover:text-white mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Resources
           </Link>
@@ -54,7 +54,7 @@ export default async function BlogPostPage({ params }: Props) {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-[8%] max-w-3xl">
+        <div className="container mx-auto px-4 max-w-3xl">
           <div className="prose prose-lg max-w-none prose-headings:text-[#0B3AA8] prose-a:text-[#0B3AA8]">
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
           </div>

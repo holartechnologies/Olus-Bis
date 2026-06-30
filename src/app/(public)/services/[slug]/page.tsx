@@ -23,7 +23,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-[8%]">
+        <div className="container mx-auto px-4">
           <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">
             Immigration Service
           </Badge>
@@ -33,7 +33,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-[8%]">
+        <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2">
               <h2 className="text-2xl font-bold text-[#0B3AA8] mb-6">

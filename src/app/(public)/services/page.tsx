@@ -32,7 +32,7 @@ export default function ServicesPage() {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-[8%] text-center">
+        <div className="container mx-auto px-4 text-center">
           <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">Our Services</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Immigration Services</h1>
           <p className="text-lg text-blue-200 max-w-2xl mx-auto">
@@ -42,7 +42,7 @@ export default function ServicesPage() {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-[8%]">
+        <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {SERVICES.map((service) => (
               <Link key={service.slug} href={`/services/${service.slug}`}>
@@ -67,7 +67,7 @@ export default function ServicesPage() {
       </section>
 
       <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-[8%] text-center">
+        <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-[#0B3AA8] mb-4">Not Sure Which Service You Need?</h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
             Take our free immigration assessment to find out which visa pathway is right for you.

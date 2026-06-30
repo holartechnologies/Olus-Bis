@@ -92,7 +92,7 @@ export default function AssessmentPage() {
     return (
       <>
         <section className="bg-gradient-brand text-white py-20">
-          <div className="container mx-auto px-[8%] text-center">
+          <div className="container mx-auto px-4 text-center">
             <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">
               Your Results
             </Badge>
@@ -101,7 +101,7 @@ export default function AssessmentPage() {
         </section>
 
         <section className="py-20">
-          <div className="container mx-auto px-[8%] max-w-2xl">
+          <div className="container mx-auto px-4 max-w-2xl">
             <Card className="border-[#0B3AA8]/20">
               <CardContent className="p-8 text-center">
                 <div className="flex justify-center mb-6">
@@ -144,7 +144,7 @@ export default function AssessmentPage() {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-[8%] text-center">
+        <div className="container mx-auto px-4 text-center">
           <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">
             Free Assessment
           </Badge>
@@ -156,7 +156,7 @@ export default function AssessmentPage() {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-[8%] max-w-2xl">
+        <div className="container mx-auto px-4 max-w-2xl">
           <Card className="border-[#0B3AA8]/20">
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-5">

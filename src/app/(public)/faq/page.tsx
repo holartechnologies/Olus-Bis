@@ -18,7 +18,7 @@ export default async function FAQPage() {
   return (
     <>
       <section className="bg-gradient-brand text-white py-20">
-        <div className="container mx-auto px-[8%] text-center">
+        <div className="container mx-auto px-4 text-center">
           <Badge className="mb-4 bg-[#F5B300]/20 text-[#F5B300] border-[#F5B300]/30">FAQ</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h1>
           <p className="text-lg text-blue-200 max-w-2xl mx-auto">
@@ -28,7 +28,7 @@ export default async function FAQPage() {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-[8%] max-w-3xl">
+        <div className="container mx-auto px-4 max-w-3xl">
           {faqs.length === 0 ? (
             <div className="text-center py-20 text-gray-500">
               <p>No FAQs available yet. Check back soon.</p>
