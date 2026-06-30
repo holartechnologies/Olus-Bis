@@ -20,7 +20,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="container mx-auto flex h-20 items-center justify-between px-[8%]">
+      <div className="flex h-20 items-center justify-between px-[8%]">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex flex-col">
             <span className="text-xl font-bold text-[#0B3AA8]">OLUS-BIS</span>
@@ -101,7 +101,7 @@ export function Header() {
 
       {mobileOpen && (
         <div className="lg:hidden border-t bg-white">
-          <div className="container mx-auto px-[8%] py-4 space-y-3">
+          <div className="px-[8%] py-4 space-y-3">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
